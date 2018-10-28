@@ -1,0 +1,59 @@
+---
+- hosts: exp
+
+  tasks:
+    - name: remove the OLD Docker package
+      yum:
+        name: "{{ packages }}"
+        state: absent
+      vars:
+        packages:
+          - docker
+          - docker-latest
+          - docker-ce
+          - docker-client
+          - docker-client-latest
+          - docker-common
+          - docker-latest
+          - docker-latest-logrotate
+          - docker-logrotate
+          - docker-selinux
+          - docker-engine-selinux
+      tag:
+        - remove_docker
+#      when: remove_docker__first
+
+    - name: install additional packet
+      yum:
+        name: "{{ packages2 }}"
+        state: latest
+      vars:
+        packages2:
+          - yum-utils
+          - device-mapper-persistent-data
+          - lvm2
+
+    - name: Add docker Repo
+      shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+ 
+    - name: install Docker-CE
+      yum:
+        name: docker-ce
+        state: latest
+      tag:
+        - install_docker         
+
+    - name: Start and Enable Docker Service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add chatbot user(s) to "docker" group
+      user:
+#        name: "{{ item }}"
+        name: "chatbot"
+        groups: "docker"
+        append: true
+#      loop: "{{ docker__users }}"
+

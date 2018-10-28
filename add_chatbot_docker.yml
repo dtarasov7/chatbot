@@ -1,0 +1,14 @@
+---
+- hosts: exp
+
+  tasks:
+    - name: Add chatbot user(s) to "docker" group
+      user:
+#        name: "{{ item }}"
+        name: "chatbot"
+        groups: "docker"
+        append: true
+#      loop: "{{ docker__users }}"
+      tags:
+        -Add_chatbot_to_docker
+
